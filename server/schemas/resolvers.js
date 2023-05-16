@@ -35,7 +35,7 @@ const resolvers = {
       return { token, user };
     },
 
-    saveBook: async (parent, { authors, description, title, bookId, image, link }, context) => {
+    saveBook: async (parent, {saveBookInput:{ authors, description, title, bookId, image, link }}, context) => {
       if (context.user) {
         const book = await Book.create({
           bookId, 
