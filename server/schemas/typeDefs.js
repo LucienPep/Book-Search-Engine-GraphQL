@@ -18,7 +18,7 @@ const typeDefs = gql`
     image: String
     link: String): User
 
-    removeBook(bookId: ID): User
+    removeBook(bookId: String!): User
   }
 
   type User {
