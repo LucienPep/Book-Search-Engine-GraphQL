@@ -1,13 +1,13 @@
-const { User, Book } = require('../models');
-const { signToken } = require('../utils/auth');
+const { User, Book } = require("../models");
+const { signToken } = require("../utils/auth");
 
 const resolvers = {
   Query: {
     me: async (parent, args, context) => {
       if (context.user) {
-        return User.findOne({ _id: context.user._id }).populate('savedBooks');
+        return User.findOne({ _id: context.user._id }).populate("savedBooks");
       }
-      throw new AuthenticationError('Not Logged In');
+      throw new AuthenticationError("Not Logged In");
     },
   },
 
@@ -16,12 +16,12 @@ const resolvers = {
       const user = await User.findOne({ email });
 
       if (!user) {
-        throw new AuthenticationError('Incorrect E-Mail');
+        throw new AuthenticationError("Incorrect E-Mail");
       }
       const correctPw = await user.isCorrectPassword(password);
 
       if (!correctPw) {
-        throw new AuthenticationError('Incorrect Password');
+        throw new AuthenticationError("Incorrect Password");
       }
       const token = signToken(user);
 
@@ -35,21 +35,28 @@ const resolvers = {
       return { token, user };
     },
 
-    saveBook: async (parent, { authors, description, title, bookId, image, link }, context) => {
+    saveBook: async (
+      parent,
+      { authors, description, title, bookId, image, link },
+      context
+    ) => {
 
-      console.log(context)
-    
-        await User.findOneAndUpdate(
-          { _id: context.user._id },
-          { $addToSet: { savedBooks:{  bookId, authors, description, title, image, link }}},
-          {new:true}
-        );    
+      return await User.findOneAndUpdate(
+        { _id: context.user._id },
+        {
+          $addToSet: {
+            savedBooks: { bookId, authors, description, title, image, link },
+          },
+        },
+        { new: true }
+      );
     },
 
     removeBook: async (parent, { bookId }, context) => {
       if (context.user) {
         const book = await Book.findOneAndDelete({
-          _id: bookId});
+          _id: bookId,
+        });
 
         await User.findOneAndUpdate(
           { _id: context.user._id },
@@ -58,7 +65,7 @@ const resolvers = {
 
         return book;
       }
-      throw new AuthenticationError('Not Logged In');
+      throw new AuthenticationError("Not Logged In");
     },
   },
 };
